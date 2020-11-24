@@ -110,6 +110,7 @@ def save_mesh_to_stl(mesh, filename):
 im = capillary_binary_image[990:1010, :, :]
 
 # %%
+# use only 1 row of voxels to increase rendering speed
 show_3d_image(im[0:1, :, :])
 
 # %%
