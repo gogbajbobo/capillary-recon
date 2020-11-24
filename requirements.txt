@@ -1,0 +1,7 @@
+h5py==3.1.0
+jupyterlab==2.2.9
+jupytext==1.7.1
+matplotlib==3.3.3
+numpy==1.19.4
+scikit-image==0.17.2
+numpy-stl==2.13.0
