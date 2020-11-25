@@ -128,3 +128,4 @@ dmypy.json
 .idea/
 *.stl
 *.ipynb
+.DS_Store
