@@ -26,6 +26,7 @@ from mpl_toolkits import mplot3d
 
 from skimage.filters import threshold_otsu
 from skimage.measure import marching_cubes
+from porespy.filters import find_disconnected_voxels
 
 from collections import namedtuple
 
@@ -39,9 +40,9 @@ print(capillary_recon_image.shape)
 
 # %%
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-axes[0].imshow(capillary_recon_image[0, :, :])
+axes[0].imshow(capillary_recon_image[10, :, :])
 axes[1].imshow(capillary_recon_image[1000, :, :])
-axes[2].imshow(capillary_recon_image[1979, :, :])
+axes[2].imshow(capillary_recon_image[-1, :, :])
 
 # %%
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
@@ -49,20 +50,65 @@ axes[0].imshow(capillary_recon_image[:, 105, :])
 axes[1].imshow(capillary_recon_image[:, :, 85])
 
 # %%
+fig, axes = plt.subplots(1, 4, figsize=(20, 5))
+axes[0].imshow(capillary_recon_image[:50, 105, :])
+axes[1].imshow(capillary_recon_image[:50, :, 85])
+axes[2].imshow(capillary_recon_image[-50:, 105, :])
+axes[3].imshow(capillary_recon_image[-50:, :, 85])
+
+# %%
+capillary_recon_image = capillary_recon_image[20:, :, :]
+print(capillary_recon_image.shape)
+
+# %%
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+axes[0].imshow(capillary_recon_image[0, :, :])
+axes[1].imshow(capillary_recon_image[1000, :, :])
+axes[2].imshow(capillary_recon_image[-1, :, :])
+
+# %%
+fig, axes = plt.subplots(1, 4, figsize=(20, 5))
+axes[0].imshow(capillary_recon_image[:50, 105, :])
+axes[1].imshow(capillary_recon_image[:50, :, 85])
+axes[2].imshow(capillary_recon_image[-50:, 105, :])
+axes[3].imshow(capillary_recon_image[-50:, :, 85])
+
+# %%
 # grayscale image binarization
 threshold = threshold_otsu(capillary_recon_image)
 capillary_binary_image = capillary_recon_image >= threshold
+
+plt.figure(figsize=(15, 5))
+plt.hist(np.ravel(capillary_recon_image), bins=256, color='lightgray')
+plt.axvline(x=threshold, color='r', linestyle='dashed', linewidth=2)
+
+plt.figure(figsize=(15, 5))
+plt.hist(np.ravel(capillary_recon_image), bins=256, color='lightgray', log=True)
+plt.axvline(x=threshold, color='r', linestyle='dashed', linewidth=2)
+
+print(threshold)
 
 # %%
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 axes[0].imshow(capillary_binary_image[0, :, :])
 axes[1].imshow(capillary_binary_image[1000, :, :])
-axes[2].imshow(capillary_binary_image[1979, :, :])
+axes[2].imshow(capillary_binary_image[-1, :, :])
 
 # %%
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 axes[0].imshow(capillary_binary_image[:, 105, :])
 axes[1].imshow(capillary_binary_image[:, :, 85])
+
+# %%
+fig, axes = plt.subplots(1, 4, figsize=(20, 5))
+axes[0].imshow(capillary_binary_image[:50, 105, :])
+axes[1].imshow(capillary_binary_image[:50, :, 85])
+axes[2].imshow(capillary_binary_image[-50:, 105, :])
+axes[3].imshow(capillary_binary_image[-50:, :, 85])
+
+# %%
+levitating_stones = find_disconnected_voxels(capillary_binary_image)
+print(np.sum(levitating_stones))
 
 
 # %%
