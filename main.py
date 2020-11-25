@@ -219,12 +219,6 @@ save_mesh_to_stl(mesh, 'mesh_whole_recon_1.stl')
 mesh = mesh_calculation(-capillary_recon_image, pad_width=1, level=-threshold)
 save_mesh_to_stl(mesh, 'mesh_whole_recon_2.stl')
 
-# %%
-fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-axes[0].imshow(capillary_binary_image[0, :, :])
-axes[1].imshow(capillary_binary_image[1000, :, :])
-axes[2].imshow(capillary_binary_image[-1, :, :])
-
 
 # %%
 def closing_3d(image, element):
@@ -243,28 +237,42 @@ def opening_3d(image, element):
 
 
 # %%
-# fill the capillary central hole 
+plt.imshow(capillary_binary_image[0, :, :])
+
+# %%
+# fill the capillary channel 
 closing_element = morphology.disk(10)
 closing_image = closing_3d(capillary_binary_image, closing_element)
 plt.imshow(closing_image[0, :, :])
 
 # %%
-# get the capillary central hole
+# get the capillary channel
 diff_image = closing_image != capillary_binary_image
 plt.imshow(diff_image[0, :, :])
 
 # %%
 # find and erase the remaining garbage
-opening_element = morphology.disk(1)
+opening_element = morphology.disk(2)
 opening_image = opening_3d(diff_image, opening_element)
 plt.imshow(opening_image[0, :, :])
 
 # %%
 # check levitating stones and closed pores
-# if we have not null number of stones/pores — we should make a correction in closing/opening elements size
+# if we have not null numbers of stones/pores — we should make a corrections in closing/opening elements size
 levitating_stones = find_disconnected_voxels(opening_image)
 print(f'levitating_stones: {np.sum(levitating_stones)}')
 closed_pores = find_disconnected_voxels(~opening_image)
 print(f'closed_pores: {np.sum(closed_pores)}')
+
+# %%
+# calculate and save meshes for capillary channel
+mesh = mesh_calculation(opening_image)
+save_mesh_to_stl(mesh, 'mesh_capillary_channel_bin_0.stl')
+
+mesh = mesh_calculation(opening_image, pad_width=1)
+save_mesh_to_stl(mesh, 'mesh_capillary_channel_bin_1.stl')
+
+mesh = mesh_calculation(~opening_image, pad_width=1)
+save_mesh_to_stl(mesh, 'mesh_capillary_channel_bin_2.stl')
 
 # %%
