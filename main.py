@@ -110,6 +110,10 @@ axes[3].imshow(capillary_binary_image[-50:, :, 85])
 levitating_stones = find_disconnected_voxels(capillary_binary_image)
 print(np.sum(levitating_stones))
 
+# %%
+# remove levitating stones
+capillary_binary_image[levitating_stones] = False
+
 
 # %%
 def show_3d_image(image):
