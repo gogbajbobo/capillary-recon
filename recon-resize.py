@@ -25,9 +25,10 @@ import matplotlib.pyplot as plt
 # %%
 group_name = 'Reconstruction'
 capillary_recon_path = '/Users/grimax/Desktop/tmp/capillary/tomo_rec.glass_capillary(Mo_mono_40-40).h5'
-capillary_recon = h5py.File(capillary_recon_path)
-capillary_recon_image = np.array(capillary_recon[group_name])
-print(capillary_recon_image.shape)
+
+with h5py.File(capillary_recon_path) as capillary_recon:
+    capillary_recon_image = np.array(capillary_recon[group_name])
+    print(capillary_recon_image.shape)
 
 # %%
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
@@ -46,7 +47,9 @@ axes[2].imshow(capillary_recon_image_cut[-1, :, :])
 
 # %%
 capillary_recon_cut_path = '/Users/grimax/Desktop/tmp/capillary/tomo_rec.glass_capillary(Mo_mono_40-40)_cut.h5'
-file = h5py.File(capillary_recon_cut_path, mode='w')
-file.create_dataset(group_name, data=capillary_recon_image_cut, compression='lzf')
+
+with h5py.File(capillary_recon_cut_path, mode='w') as file:
+    file.create_dataset(group_name, data=capillary_recon_image_cut, compression='lzf')
+
 
 # %%
