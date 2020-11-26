@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -35,10 +34,11 @@ from collections import namedtuple
 from stl import mesh as stl_mesh
 
 # %%
-capillary_recon_path = '/Users/grimax/Desktop/tmp/capillary/56adacb0-0319-464f-a455-7273fc1fb755.h5'
-capillary_recon = h5py.File(capillary_recon_path)
-capillary_recon_image = np.array(capillary_recon['Reconstruction'])
-print(capillary_recon_image.shape)
+capillary_recon_path = '/Users/grimax/Desktop/tmp/capillary/tomo_rec.glass_capillary(Mo_mono_40-40)_cut.h5'
+
+with h5py.File(capillary_recon_path) as capillary_recon:
+    capillary_recon_image = np.array(capillary_recon['Reconstruction'])
+    print(capillary_recon_image.shape)
 
 # %%
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
@@ -48,19 +48,21 @@ axes[2].imshow(capillary_recon_image[-1, :, :])
 
 # %%
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-axes[0].imshow(capillary_recon_image[:, 105, :])
-axes[1].imshow(capillary_recon_image[:, :, 85])
+axes[0].imshow(capillary_recon_image[:, 85, :])
+axes[1].imshow(capillary_recon_image[:, :, 105])
 
 # %%
 fig, axes = plt.subplots(1, 4, figsize=(20, 5))
-axes[0].imshow(capillary_recon_image[:50, 105, :])
-axes[1].imshow(capillary_recon_image[:50, :, 85])
-axes[2].imshow(capillary_recon_image[-50:, 105, :])
-axes[3].imshow(capillary_recon_image[-50:, :, 85])
+axes[0].imshow(capillary_recon_image[:50, 85, :])
+axes[1].imshow(capillary_recon_image[:50, :, 105])
+axes[2].imshow(capillary_recon_image[-50:, 85, :])
+axes[3].imshow(capillary_recon_image[-50:, :, 105])
 
 # %%
-capillary_recon_image = capillary_recon_image[20:, :, :]
-print(capillary_recon_image.shape)
+# cut upper part of image (not needed with 'tomo_rec.glass_capillary(Mo_mono_40-40)_cut.h5' file)
+
+# capillary_recon_image = capillary_recon_image[20:, :, :]
+# print(capillary_recon_image.shape)
 
 # %%
 fig, axes = plt.subplots(1, 3, figsize=(15, 5))
@@ -70,10 +72,10 @@ axes[2].imshow(capillary_recon_image[-1, :, :])
 
 # %%
 fig, axes = plt.subplots(1, 4, figsize=(20, 5))
-axes[0].imshow(capillary_recon_image[:50, 105, :])
-axes[1].imshow(capillary_recon_image[:50, :, 85])
-axes[2].imshow(capillary_recon_image[-50:, 105, :])
-axes[3].imshow(capillary_recon_image[-50:, :, 85])
+axes[0].imshow(capillary_recon_image[:50, 85, :])
+axes[1].imshow(capillary_recon_image[:50, :, 105])
+axes[2].imshow(capillary_recon_image[-50:, 85, :])
+axes[3].imshow(capillary_recon_image[-50:, :, 105])
 
 # %%
 # grayscale image binarization
@@ -98,15 +100,15 @@ axes[2].imshow(capillary_binary_image[-1, :, :])
 
 # %%
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-axes[0].imshow(capillary_binary_image[:, 105, :])
-axes[1].imshow(capillary_binary_image[:, :, 85])
+axes[0].imshow(capillary_binary_image[:, 85, :])
+axes[1].imshow(capillary_binary_image[:, :, 105])
 
 # %%
 fig, axes = plt.subplots(1, 4, figsize=(20, 5))
-axes[0].imshow(capillary_binary_image[:50, 105, :])
-axes[1].imshow(capillary_binary_image[:50, :, 85])
-axes[2].imshow(capillary_binary_image[-50:, 105, :])
-axes[3].imshow(capillary_binary_image[-50:, :, 85])
+axes[0].imshow(capillary_binary_image[:50, 85, :])
+axes[1].imshow(capillary_binary_image[:50, :, 105])
+axes[2].imshow(capillary_binary_image[-50:, 85, :])
+axes[3].imshow(capillary_binary_image[-50:, :, 105])
 
 # %%
 levitating_stones = find_disconnected_voxels(capillary_binary_image)
@@ -221,6 +223,9 @@ save_mesh_to_stl(mesh, 'mesh_whole_recon_2.stl')
 
 
 # %%
+# get the capillary chanell with morphological operations
+
+# %%
 def closing_3d(image, element):
     result = np.zeros(image.shape, dtype=np.bool)
     for i in range(image.shape[0]):
@@ -237,28 +242,60 @@ def opening_3d(image, element):
 
 
 # %%
-plt.imshow(capillary_binary_image[0, :, :])
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+axes[0].imshow(capillary_binary_image[0, :, :])
+axes[1].imshow(capillary_binary_image[1000, :, :])
+axes[2].imshow(capillary_binary_image[-1, :, :])
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+axes[0].imshow(capillary_binary_image[:, 85, :])
+axes[1].imshow(capillary_binary_image[:, :, 105])
 
 # %%
 # fill the capillary channel 
-closing_element = morphology.disk(10)
+closing_element = morphology.disk(12)
 closing_image = closing_3d(capillary_binary_image, closing_element)
-plt.imshow(closing_image[0, :, :])
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+axes[0].imshow(closing_image[0, :, :])
+axes[1].imshow(closing_image[110, :, :])
+axes[2].imshow(closing_image[-1, :, :])
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+axes[0].imshow(closing_image[:, 85, :])
+axes[1].imshow(closing_image[:, :, 105])
 
 # %%
 # get the capillary channel
 diff_image = closing_image != capillary_binary_image
-plt.imshow(diff_image[0, :, :])
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+axes[0].imshow(diff_image[0, :, :])
+axes[1].imshow(diff_image[1000, :, :])
+axes[2].imshow(diff_image[-1, :, :])
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+axes[0].imshow(diff_image[:, 85, :])
+axes[1].imshow(diff_image[:, :, 105])
 
 # %%
 # find and erase the remaining garbage
 opening_element = morphology.disk(2)
 opening_image = opening_3d(diff_image, opening_element)
-plt.imshow(opening_image[0, :, :])
+
+fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+axes[0].imshow(opening_image[0, :, :])
+axes[1].imshow(opening_image[1000, :, :])
+axes[2].imshow(opening_image[-1, :, :])
+
+fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+axes[0].imshow(opening_image[:, 85, :])
+axes[1].imshow(opening_image[:, :, 105])
 
 # %%
 # check levitating stones and closed pores
-# if we have not null numbers of stones/pores — we should make a corrections in closing/opening elements size
+# we should have null numbers of stones/pores
+# otherwise check closing/opening elements sizes
 levitating_stones = find_disconnected_voxels(opening_image)
 print(f'levitating_stones: {np.sum(levitating_stones)}')
 closed_pores = find_disconnected_voxels(~opening_image)
