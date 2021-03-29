@@ -34,7 +34,7 @@ from collections import namedtuple
 from stl import mesh as stl_mesh
 
 # %%
-capillary_recon_path = '/Users/grimax/Desktop/tmp/capillary/tomo_rec.glass_capillary(Mo_mono_40-40)_cut.h5'
+capillary_recon_path = '/Users/grimax/Desktop/tmp/capillary/tomo_rec.glass_capillary(Mo_mono_40-40).h5'
 
 with h5py.File(capillary_recon_path) as capillary_recon:
     capillary_recon_image = np.array(capillary_recon['Reconstruction'])
@@ -45,6 +45,10 @@ fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 axes[0].imshow(capillary_recon_image[10, :, :])
 axes[1].imshow(capillary_recon_image[1000, :, :])
 axes[2].imshow(capillary_recon_image[-1, :, :])
+
+# %%
+plt.figure(figsize=(10, 10))
+plt.imshow(capillary_recon_image[0, :, :])
 
 # %%
 fig, axes = plt.subplots(1, 2, figsize=(10, 5))
